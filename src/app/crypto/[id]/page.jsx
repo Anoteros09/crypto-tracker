@@ -3,8 +3,15 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 export default async function crypto({ params }) {
   const { id } = await params;
-  console.log(id);
-  const response = await fetch(`https://api.coingecko.com/api/v3/coins/${id}`);
+  const apiUrl = process.env.NEXT_PUBLIC_CRYPTO_API_URL;
+  const api_key = process.env.NEXT_PUBLIC_API_KEY;
+  const response = await fetch(`${apiUrl}/coins/${id}`, {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      "x-cg-demo-api-key": api_key,
+    },
+  });
 
   const cryptoData = await response.json();
 
