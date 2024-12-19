@@ -133,6 +133,7 @@ const colDefs = [
 
 const CryptoTracker = () => {
   const [data, setData] = useState([]);
+  const apiUrl = process.env.NEXT_PUBLIC_CRYPTO_API_URL;
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -148,13 +149,14 @@ const CryptoTracker = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const api_key = process.env.NEXT_PUBLIC_API_KEY;
         const response = await fetch(
-          "https://api.coingecko.com/api/v3/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d",
+          `${apiUrl}/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d`,
           {
             method: "GET",
             headers: {
               accept: "application/json",
-              "x-cg-demo-api-key": "CG-RYKc5qQ7gEMRp4BN9pt1KzcS ",
+              "x-cg-demo-api-key": api_key,
             },
           }
         );
