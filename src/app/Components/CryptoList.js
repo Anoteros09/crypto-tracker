@@ -1,20 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import axios from "axios";
 import Link from "next/link";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableFooter,
-  TableHead,
-  TablePagination,
-  TableRow,
-} from "@mui/material";
 import Paper from "@mui/material/Paper";
 import { DataGrid } from "@mui/x-data-grid";
+import InfoIconFooter from "./InfoIconFooter";
+import CustomModal from "./CustomModal";
 
 const colDefs = [
   {
@@ -130,26 +121,17 @@ const colDefs = [
     },
   },
 ];
+const api_key = process.env.NEXT_PUBLIC_API_KEY;
+const apiUrl = process.env.NEXT_PUBLIC_CRYPTO_API_URL;
 
 const CryptoTracker = () => {
   const [data, setData] = useState([]);
-  const apiUrl = process.env.NEXT_PUBLIC_CRYPTO_API_URL;
   const [searchQuery, setSearchQuery] = useState("");
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const api_key = process.env.NEXT_PUBLIC_API_KEY;
         const response = await fetch(
           `${apiUrl}/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d`,
           {
@@ -166,6 +148,7 @@ const CryptoTracker = () => {
         console.error("Error fetching data:", error);
       }
     };
+
     fetchData();
   }, []);
 
@@ -187,10 +170,16 @@ const CryptoTracker = () => {
           value={searchQuery}
           onChange={handleSearchChange}
         />
-        <Paper sx={{ height: "630px", width: "100%" }}>
+        <Paper sx={{ height: "630px", width: "100%" }} elevation={5}>
           <DataGrid
             columns={colDefs}
             rows={filteredData}
+            slots={{
+              footer: InfoIconFooter,
+            }}
+            slotProps={{
+              footer: { setInfoModalOpen },
+            }}
             pageSizeOptions={[5, 10, 25, { value: -1, label: "All" }]}
             initialState={{
               pagination: { paginationModel: { pageSize: 10 } },
@@ -198,194 +187,12 @@ const CryptoTracker = () => {
             sx={{ border: 0 }}
           />
         </Paper>
-
-        {/* <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell align="left">Symbol</TableCell>
-                <TableCell align="left">Price</TableCell>
-                <TableCell align="left">Market Cap</TableCell>
-                <TableCell align="left">1h Change</TableCell>
-                <TableCell align="left">24h Change</TableCell>
-                <TableCell align="left">7D Change</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {(rowsPerPage > 0
-                ? filteredData.slice(
-                    page * rowsPerPage,
-                    page * rowsPerPage + rowsPerPage
-                  )
-                : filteredData
-              ).map((crypto) => (
-                <TableRow key={crypto.id}>
-                  <TableCell>
-                    <Link
-                      href={`/crypto/${crypto.id}`}
-                      style={{
-                        textDecoration: "none",
-                        color: "inherit",
-                      }}
-                    >
-                      <img
-                        src={crypto.image}
-                        alt={crypto.name}
-                        className="rounded-circle mr-2"
-                        style={{ width: "30px", height: "30px" }}
-                      />
-                      {crypto.name}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{crypto.symbol.toUpperCase()}</TableCell>
-                  <TableCell>₹{crypto.current_price.toFixed(2)}</TableCell>
-                  <TableCell>
-                    ₹{crypto.market_cap.toLocaleString("en-US")}
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      color:
-                        crypto.price_change_percentage_1h_in_currency < 0
-                          ? "red"
-                          : "green",
-                    }}
-                  >
-                    {Number(
-                      crypto.price_change_percentage_1h_in_currency
-                    ).toFixed(2)}
-                    %
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      color:
-                        crypto.price_change_percentage_24h_in_currency < 0
-                          ? "red"
-                          : "green",
-                    }}
-                  >
-                    {Number(
-                      crypto.price_change_percentage_24h_in_currency
-                    ).toFixed(2)}
-                    %
-                  </TableCell>
-                  <TableCell
-                    style={{
-                      color:
-                        crypto.price_change_percentage_7d_in_currency < 0
-                          ? "red"
-                          : "green",
-                    }}
-                  >
-                    {Number(
-                      crypto.price_change_percentage_7d_in_currency
-                    ).toFixed(2)}
-                    %
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-                  colSpan={3}
-                  count={filteredData.length}
-                  rowsPerPage={10}
-                  page={page}
-                  slotProps={{
-                    select: {
-                      inputProps: {
-                        "aria-label": "rows per page",
-                      },
-                      native: true,
-                    },
-                  }}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-              </TableRow>
-            </TableFooter>
-          </Table>
-        </TableContainer> */}
-        {/* <table className="table border-solid border-2 border-sky-500">
-          <thead className="bg-dark">
-            <tr>
-              <th className="bg-info">Name</th>
-              <th className="bg-info">Symbol</th>
-              <th className="bg-info">Price</th>
-              <th className="bg-info">Market Cap</th>
-              <th className="bg-info">1h change</th>
-              <th className="bg-info">24h change</th>
-              <th className="bg-info">7D Change</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredData.map((crypto) => (
-              <tr key={crypto.id}>
-                <td>
-                  <Link
-                    href={`/crypto/${crypto.id}`}
-                    style={{
-                      textDecoration: "none",
-                      color: "inherit",
-                    }}
-                  >
-                    <img
-                      src={crypto.image}
-                      alt={crypto.name}
-                      className="rounded-circle mr-2"
-                      style={{ width: "30px", height: "30px" }}
-                    />
-                    {crypto.name}
-                  </Link>
-                </td>
-                <td>{crypto.symbol.toUpperCase()}</td>
-                <td>₹{crypto.current_price.toFixed(2)}</td>
-                <td>₹{crypto.market_cap.toLocaleString("en-US")}</td>
-                <td
-                  style={{
-                    color:
-                      crypto.price_change_percentage_1h_in_currency < 0
-                        ? "red"
-                        : "green",
-                  }}
-                >
-                  {Number(
-                    crypto.price_change_percentage_1h_in_currency
-                  ).toFixed(2)}
-                  %
-                </td>
-                <td
-                  style={{
-                    color:
-                      crypto.price_change_percentage_24h_in_currency < 0
-                        ? "red"
-                        : "green",
-                  }}
-                >
-                  {Number(
-                    crypto.price_change_percentage_24h_in_currency
-                  ).toFixed(2)}
-                  %
-                </td>
-                <td
-                  style={{
-                    color:
-                      crypto.price_change_percentage_7d_in_currency < 0
-                        ? "red"
-                        : "green",
-                  }}
-                >
-                  {Number(
-                    crypto.price_change_percentage_7d_in_currency
-                  ).toFixed(2)}
-                  %
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table> */}
+        <CustomModal
+          open={infoModalOpen}
+          setOpen={setInfoModalOpen}
+          titleText="Info"
+          bodyText="Click on the Coin's Name to get detail info about the coin!"
+        />
       </div>
     </>
   );
