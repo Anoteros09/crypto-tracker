@@ -2,7 +2,7 @@
 import React, { use, useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useParams } from "next/navigation";
-import { Box } from "@mui/material";
+import { Box, Paper } from "@mui/material";
 import { LineChart } from "@mui/x-charts";
 import { historicalArrayFormatter } from "@/app/utils/historicalDataFormatter";
 import zIndex from "@mui/material/styles/zIndex";
@@ -100,79 +100,81 @@ export default function crypto() {
       ) : (
         <div className="container mt-5 d-flex justify-content-center">
           {coinDetailFlags.isSuccess ? (
-            <div className="card">
-              <div className="flex">
-                <img
-                  src={coinDetails.image.large}
-                  className="card-img-top img-fluid"
-                  alt=""
-                  style={{ maxWidth: "200px" }}
-                />
-                {coinHistDataFlags.isSuccess ? (
-                  <LineChart
-                    style={{ backgroundColor: grey }}
-                    resolveSizeBeforeRender={true}
-                    dataset={coinHistData}
-                    xAxis={[{ dataKey: "date", scaleType: "utc" }]}
-                    series={[
-                      {
-                        dataKey: "price",
-                        color: "#fdb462",
-                        curve: "linear",
-                        showMark: false,
-                      },
-                    ]}
-                    height={200}
-                    width={800}
-                    margin={{ left: 80 }}
+            <Paper elevation={5}>
+              <div className="card">
+                <div className="flex">
+                  <img
+                    src={coinDetails.image.large}
+                    className="card-img-top img-fluid"
+                    alt=""
+                    style={{ maxWidth: "200px" }}
                   />
-                ) : null}
+                  {coinHistDataFlags.isSuccess ? (
+                    <LineChart
+                      style={{ backgroundColor: grey }}
+                      resolveSizeBeforeRender={true}
+                      dataset={coinHistData}
+                      xAxis={[{ dataKey: "date", scaleType: "utc" }]}
+                      series={[
+                        {
+                          dataKey: "price",
+                          color: "#fdb462",
+                          curve: "linear",
+                          showMark: false,
+                        },
+                      ]}
+                      height={200}
+                      width={800}
+                      margin={{ left: 80 }}
+                    />
+                  ) : null}
+                </div>
+                <div className="card-body">
+                  <h1 className="card-title">{coinDetails.name}</h1>
+                  <h5 className="card-text">{coinDescription}</h5>
+                  <p className="card-text">
+                    <b>Symbol:</b>
+                    {coinDetails.symbol.toUpperCase()}
+                  </p>
+                  <p className="card-text">
+                    <b>Rank:</b>
+                    {coinDetails.market_cap_rank}
+                  </p>
+                  <p className="card-text">
+                    <b>Market Cap:</b>
+                    {coinDetails.market_data.market_cap.inr}
+                  </p>
+                  <p className="card-text">
+                    <b>Current Price:</b>
+                    {coinDetails.market_data.current_price.inr}
+                  </p>
+                  <p className="card-text">
+                    <b>Total Supply:</b>
+                    {coinDetails.market_data.total_supply}
+                  </p>
+                  <p className="card-text">
+                    <b>Market Cap Change (24h):</b>
+                    {coinDetails.market_data.market_cap_change_percentage_24h}%
+                  </p>
+                  <p className="card-text">
+                    <b>High (24h):</b>
+                    {coinDetails.market_data.high_24h.inr}
+                  </p>
+                  <p className="card-text">
+                    <b>Low (24h):</b>
+                    {coinDetails.market_data.low_24h.inr}
+                  </p>
+                  <p className="card-text">
+                    <b>Total Volume (24h):</b>
+                    {coinDetails.market_data.total_volume.inr}
+                  </p>
+                  <p className="card-text">
+                    <b>Circulating Supply:</b>
+                    {coinDetails.market_data.circulating_supply}
+                  </p>
+                </div>
               </div>
-              <div className="card-body">
-                <h1 className="card-title">{coinDetails.name}</h1>
-                <h5 className="card-text">{coinDescription}</h5>
-                <p className="card-text">
-                  <b>Symbol:</b>
-                  {coinDetails.symbol.toUpperCase()}
-                </p>
-                <p className="card-text">
-                  <b>Rank:</b>
-                  {coinDetails.market_cap_rank}
-                </p>
-                <p className="card-text">
-                  <b>Market Cap:</b>
-                  {coinDetails.market_data.market_cap.inr}
-                </p>
-                <p className="card-text">
-                  <b>Current Price:</b>
-                  {coinDetails.market_data.current_price.inr}
-                </p>
-                <p className="card-text">
-                  <b>Total Supply:</b>
-                  {coinDetails.market_data.total_supply}
-                </p>
-                <p className="card-text">
-                  <b>Market Cap Change (24h):</b>
-                  {coinDetails.market_data.market_cap_change_percentage_24h}%
-                </p>
-                <p className="card-text">
-                  <b>High (24h):</b>
-                  {coinDetails.market_data.high_24h.inr}
-                </p>
-                <p className="card-text">
-                  <b>Low (24h):</b>
-                  {coinDetails.market_data.low_24h.inr}
-                </p>
-                <p className="card-text">
-                  <b>Total Volume (24h):</b>
-                  {coinDetails.market_data.total_volume.inr}
-                </p>
-                <p className="card-text">
-                  <b>Circulating Supply:</b>
-                  {coinDetails.market_data.circulating_supply}
-                </p>
-              </div>
-            </div>
+            </Paper>
           ) : null}
         </div>
       )}
