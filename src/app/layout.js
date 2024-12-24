@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./Components/NavBar";
 import { Suspense } from "react";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,15 +21,29 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <header className="text-center sticky top-0 z-1">
-          <Navbar />
-        </header>
-        <Suspense fallback={<p>Loading Data...</p>}>{children}</Suspense>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <head>
+          <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+            integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+            crossOrigin="anonymous"
+          />
+        </head>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-blue-900 via-purple-800 to-gray-900 text-gray-200 min-h-screen`}
+        >
+          <header className="text-center sticky top-0 z-1">
+            <Navbar />
+          </header>
+          {children}
+          <footer className="py-6 text-center text-sm text-gray-400">
+            &copy; {new Date().getFullYear()} Crypto Tracker. All rights
+            reserved.
+          </footer>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

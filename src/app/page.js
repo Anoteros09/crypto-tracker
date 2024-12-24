@@ -1,11 +1,10 @@
 import React from "react";
-import CrptoList from "./Components/CryptoList";
-const page = () => {
+import "bootstrap/dist/css/bootstrap.min.css";
+import WelcomePage from "./Components/WelcomePage";
+export default function page() {
   return (
     <div>
-      <CrptoList />
+      <WelcomePage />
     </div>
   );
-};
-
-export default page;
+}
