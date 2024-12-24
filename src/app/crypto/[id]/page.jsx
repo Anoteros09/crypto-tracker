@@ -2,12 +2,10 @@
 import React, { use, useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useParams } from "next/navigation";
-import { Box, Paper } from "@mui/material";
+import { Box, LinearProgress, Paper } from "@mui/material";
 import { LineChart } from "@mui/x-charts";
-import { historicalArrayFormatter } from "@/app/utils/historicalDataFormatter";
-import zIndex from "@mui/material/styles/zIndex";
 import { grey } from "@mui/material/colors";
-import LoadingAnimation from "@/app/Components/LoadingAnimation";
+import historicalArrayFormatter from "../../utils/historicalDataFormatter";
 
 const apiUrl = process.env.NEXT_PUBLIC_CRYPTO_API_URL;
 const api_key = process.env.NEXT_PUBLIC_API_KEY;
@@ -95,7 +93,7 @@ export default function crypto() {
   return (
     <>
       {coinDetailFlags.isLoading || coinHistDataFlags.isLoading ? (
-        <LoadingAnimation />
+        <LinearProgress color="primary" />
       ) : (
         <div className="container mt-5 d-flex justify-content-center">
           {coinDetailFlags.isSuccess ? (
