@@ -13,7 +13,7 @@ function formatTimestamp(unixTimestamp) {
   return new Date(year, month, day, hours, minutes, seconds);
 }
 
-export function historicalArrayFormatter(histData) {
+export default function historicalArrayFormatter(histData) {
   const formattedData = [];
   histData.map((data) => {
     const price = data[1];

@@ -1,5 +1,5 @@
-import LoadingAnimation from "@/app/Components/LoadingAnimation";
+import { LinearProgress } from "@mui/material";
 
 export default function loading() {
-  return <LoadingAnimation />;
+  return <LinearProgress color="primary" />;
 }
