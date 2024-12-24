@@ -1,6 +1,6 @@
 {
   "name": "crypto-tracker",
-  "version": "1.0.0",
+  "version": "2.0.1-Beta",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,15 +9,20 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.9.6",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@headlessui/react": "^2.2.0",
+    "@heroicons/react": "^2.2.0",
     "@mui/icons-material": "^6.2.1",
     "@mui/material": "^6.2.1",
     "@mui/x-charts": "^7.23.2",
     "@mui/x-data-grid": "^7.23.3",
+    "@neondatabase/serverless": "^0.10.4",
+    "@vercel/postgres": "^0.10.0",
     "axios": "^1.7.9",
-    "axis": "^1.0.0",
     "bootstrap": "^5.3.3",
+    "headlessui": "^0.0.0",
     "next": "15.1.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

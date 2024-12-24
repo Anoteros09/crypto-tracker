@@ -15,7 +15,6 @@ const api_key = process.env.NEXT_PUBLIC_API_KEY;
 export default function crypto() {
   const params = useParams();
   const { id } = params;
-  console.log(id);
   const [coinDetails, setCoinDetails] = useState({});
   const [coinDescription, setCoinDescription] = useState("");
   const [coinHistData, setCoinHistData] = useState([]);

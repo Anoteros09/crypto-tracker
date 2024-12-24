@@ -1,11 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 import Link from "next/link";
 import Paper from "@mui/material/Paper";
 import { DataGrid } from "@mui/x-data-grid";
-import InfoIconFooter from "./InfoIconFooter";
-import CustomModal from "./CustomModal";
+import InfoIconFooter from "../Components/InfoIconFooter";
+import CustomModal from "../Components/CustomModal";
+import { useAuth, useUser } from "@clerk/nextjs";
+import { getCurrentURL, joinPaths } from "../utils/commFuncs";
 
 const colDefs = [
   {
@@ -124,11 +125,48 @@ const colDefs = [
 const api_key = process.env.NEXT_PUBLIC_API_KEY;
 const apiUrl = process.env.NEXT_PUBLIC_CRYPTO_API_URL;
 
-const CryptoTracker = () => {
+export default function page() {
   const [data, setData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [infoModalOpen, setInfoModalOpen] = useState(false);
+  const userData = useUser();
+  const { isSignedIn, userId } = useAuth();
 
+  const addUserToDb = async () => {
+    const {
+      user: {
+        username,
+        primaryEmailAddress: { emailAddress },
+        id,
+      },
+    } = userData;
+    const path = getCurrentURL();
+    const url = joinPaths(path, "userinfo");
+    const resp = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify({ username, id, emailAddress }),
+    });
+  };
+  const fetchUserFromDb = async () => {
+    const path = getCurrentURL();
+    const url = joinPaths(path, "userinfo?");
+    const resp = await fetch(
+      url +
+        new URLSearchParams({
+          id: userId,
+        })
+    );
+    const data = await resp.json();
+    if (data.length == 0) {
+      addUserToDb();
+    }
+  };
+
+  useEffect(() => {
+    if (isSignedIn && userId) {
+      fetchUserFromDb();
+    }
+  }, [isSignedIn, userId]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -196,6 +234,4 @@ const CryptoTracker = () => {
       </div>
     </>
   );
-};
-
-export default CryptoTracker;
+}
