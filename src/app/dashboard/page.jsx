@@ -1,16 +1,17 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import Paper from "@mui/material/Paper";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
 import InfoIconFooter from "../Components/InfoIconFooter";
 import CustomModal from "../Components/CustomModal";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { getCurrentURL, joinPaths } from "../utils/commFuncs";
+import { Box, Paper, TextField } from "@mui/material";
 
 const colDefs = [
   {
     field: "name",
+    minWidth: 150,
     flex: 1,
     headerName: "Name",
     renderCell: (params) => {
@@ -36,6 +37,7 @@ const colDefs = [
 
   {
     field: "symbol",
+    minWidth: 150,
     flex: 1,
     headerName: "Symbol",
     valueFormatter: (value) => {
@@ -47,6 +49,7 @@ const colDefs = [
   },
   {
     field: "current_price",
+    minWidth: 150,
     flex: 1,
     headerName: "Current Price",
     valueFormatter: (value) => {
@@ -58,6 +61,7 @@ const colDefs = [
   },
   {
     field: "market_cap",
+    minWidth: 150,
     flex: 1,
     headerName: "Market Cap",
     valueFormatter: (value) => {
@@ -69,6 +73,7 @@ const colDefs = [
   },
   {
     field: "price_change_percentage_1h_in_currency",
+    minWidth: 150,
     flex: 1,
     headerName: "1Hr Change",
     valueFormatter: (value) => {
@@ -87,6 +92,7 @@ const colDefs = [
   },
   {
     field: "price_change_percentage_24h_in_currency",
+    minWidth: 150,
     flex: 1,
     headerName: "24Hrs Change",
     valueFormatter: (value) => {
@@ -105,6 +111,7 @@ const colDefs = [
   },
   {
     field: "price_change_percentage_7d_in_currency",
+    minWidth: 150,
     flex: 1,
     headerName: "7Day Change",
     valueFormatter: (value) => {
@@ -127,6 +134,7 @@ const apiUrl = process.env.NEXT_PUBLIC_CRYPTO_API_URL;
 
 export default function page() {
   const [data, setData] = useState([]);
+  const apiRef = useGridApiRef();
   const [searchQuery, setSearchQuery] = useState("");
   const [infoModalOpen, setInfoModalOpen] = useState(false);
   const userData = useUser();
@@ -200,18 +208,25 @@ export default function page() {
 
   return (
     <>
-      <div className="container p-5">
-        <input
+      <Paper className="md:w-[75%] w-[90%] mx-auto h-[100%] bg-gray-100 p-2 mt-10">
+        <TextField
+          className=" bg-white rounded mb-5"
           type="text"
-          placeholder="Search crypto name"
-          className="form-control mb-4"
+          id="outlined-basic"
           value={searchQuery}
           onChange={handleSearchChange}
+          variant="outlined"
+          placeholder="Search crypto name"
+          fullWidth
         />
-        <Paper sx={{ height: "630px", width: "100%" }} elevation={5}>
+        <Box className="w-[100%] h-[630px]">
           <DataGrid
+            apiRef={apiRef}
             columns={colDefs}
             rows={filteredData}
+            rowHeight={52}
+            // autosizeOnMount={true}
+            disableVirtualization={true}
             slots={{
               footer: InfoIconFooter,
             }}
@@ -224,14 +239,14 @@ export default function page() {
             }}
             sx={{ border: 0 }}
           />
-        </Paper>
-        <CustomModal
-          open={infoModalOpen}
-          setOpen={setInfoModalOpen}
-          titleText="Info"
-          bodyText="Click on the Coin's Name to get detail info about the coin!"
-        />
-      </div>
+        </Box>
+      </Paper>
+      <CustomModal
+        open={infoModalOpen}
+        setOpen={setInfoModalOpen}
+        titleText="Info"
+        bodyText="Click on the Coin's Name to get detail info about the coin!"
+      />
     </>
   );
 }
