@@ -185,7 +185,7 @@ export default function crypto() {
               <CardContent className="block sm:flex py-4">
                 <img
                   src={coinDetails.image.large}
-                  className="card-img-top img-fluid"
+                  className="card-img-top img-fluid mx-auto sm:mx-0"
                   alt=""
                   style={{ minWidth: "fit-content" }}
                 />
