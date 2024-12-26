@@ -19,7 +19,8 @@ import { blue } from "@mui/material/colors";
 import historicalArrayFormatter from "../../utils/historicalDataFormatter";
 import { useUser } from "@clerk/nextjs";
 import { createTheme, ThemeProvider } from "@mui/material";
-import { AgCharts } from "ag-charts-react";
+import { LineChart } from "@mui/x-charts";
+import ColorThief from "colorthief";
 
 const apiUrl = process.env.NEXT_PUBLIC_CRYPTO_API_URL;
 const api_key = process.env.NEXT_PUBLIC_API_KEY;
@@ -71,6 +72,7 @@ export default function crypto() {
     isLoading: true,
   });
   const [chartRange, setChartRange] = useState("1440");
+  const [bgColor, setBgColor] = useState("transparent");
 
   const handleChartRangeChange = (e) => {
     setChartRange(e.target.value);
@@ -114,6 +116,16 @@ export default function crypto() {
             },
           });
           const cryptoData = await resp.json();
+          const img = new Image();
+          img.crossOrigin = "*/*"; // Allow cross-origin image processing
+          img.src = cryptoData.image.large;
+
+          img.onload = () => {
+            const colorThief = new ColorThief();
+            const dominantColor = colorThief.getColor(img); // Get dominant color [r, g, b]
+            const rgbColor = `rgb(${dominantColor[0]}, ${dominantColor[1]}, ${dominantColor[2]})`;
+            setBgColor(rgbColor); // Update state with the extracted color
+          };
           // Extract description up to the first period (.)
           const fullDescription = cryptoData.description.en.split(".");
           setCoinDetails(cryptoData);
@@ -190,32 +202,21 @@ export default function crypto() {
                   style={{ minWidth: "fit-content" }}
                 />
                 {coinHistDataFlags.isSuccess ? (
-                  <div className="flex flex-col items-center sm:mx-3">
-                    <AgCharts
-                      style={{ height: "200px" }}
-                      className="p-0 m-0 w-screen sm:w-[800px]"
-                      options={{
-                        series: [
-                          {
-                            data: coinHistFilteredData,
-                            xKey: "date",
-                            yKey: "price",
-                            marker: {
-                              enabled: false,
-                            },
-                          },
-                        ],
-                        axes: [
-                          {
-                            type: "time",
-                            position: "bottom",
-                          },
-                          {
-                            type: "number",
-                            position: "left",
-                          },
-                        ],
-                      }}
+                  <div className="flex flex-col items-center sm:mx-3 sm:w-full">
+                    <LineChart
+                      className="shadow-md rounded-md"
+                      dataset={coinHistFilteredData}
+                      xAxis={[{ dataKey: "date", scaleType: "utc" }]}
+                      series={[
+                        {
+                          dataKey: "price",
+                          color: bgColor,
+                          curve: "linear",
+                          showMark: false,
+                        },
+                      ]}
+                      height={200}
+                      margin={{ left: 80 }}
                     />
                     <ToggleButtonGroup
                       color="secondary"
