@@ -21,6 +21,7 @@ import { useUser } from "@clerk/nextjs";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { LineChart } from "@mui/x-charts";
 import ColorThief from "colorthief";
+import { getCurrentURL, joinPaths } from "../../utils/commFuncs";
 
 const apiUrl = process.env.NEXT_PUBLIC_CRYPTO_API_URL;
 const api_key = process.env.NEXT_PUBLIC_API_KEY;
@@ -51,64 +52,72 @@ const filterHistData = (data, intervalInMinutes) => {
     return timeDiff >= 0 && timeDiff <= intervalInMilliseconds;
   });
 };
-export default function crypto() {
+
+const initialCoinDetailFlags = {
+  isSuccess: false,
+  isError: false,
+  isLoading: true,
+};
+
+const initialCoinHistDataFlags = {
+  isSuccess: false,
+  isError: false,
+  isLoading: true,
+};
+export default function Crypto() {
   const route = useRouter();
-  const params = useParams();
+  const { id: coinId } = useParams();
   const userData = useUser();
-  const { id } = params;
+  const { isSignedIn } = userData;
   const [coinDetails, setCoinDetails] = useState({});
   const [coinDescription, setCoinDescription] = useState("");
   const [coinHistData, setCoinHistData] = useState([]);
   const [coinHistFilteredData, setCoinHistFilteredData] = useState([]);
   const [bookmarkAdded, setBookmarkAdded] = useState(false);
-  const [coinDetailFlags, setCoinDetailFlags] = useState({
-    isSuccess: false,
-    isError: false,
-    isLoading: true,
-  });
-  const [coinHistDataFlags, setCoinHistDataFlags] = useState({
-    isSuccess: false,
-    isError: false,
-    isLoading: true,
-  });
+  const [bookmarks, setBookmarks] = useState([]);
+  const [coinDetailFlags, setCoinDetailFlags] = useState(
+    initialCoinDetailFlags
+  );
+  const [coinHistDataFlags, setCoinHistDataFlags] = useState(
+    initialCoinHistDataFlags
+  );
   const [chartRange, setChartRange] = useState("1440");
   const [bgColor, setBgColor] = useState("transparent");
 
   const handleChartRangeChange = (e) => {
-    setChartRange(e.target.value);
-    setCoinHistFilteredData(filterHistData(coinHistData, e.target.value));
-    console.log(e.target.value);
+    const range = e.target.value;
+    setChartRange(range);
+    setCoinHistFilteredData(filterHistData(coinHistData, range));
   };
 
-  function handleBookmark(id) {
-    const {
-      user: { id: userId },
-    } = userData;
-    console.log(id);
-    console.log(userId);
-    setBookmarkAdded(!bookmarkAdded);
-  }
-
-  function bookmarkButtom() {
-    return bookmarkAdded ? (
-      <IconButton
-        className="ml-auto text-color-black"
-        onClick={() => handleBookmark(id)}
-      >
-        <BookmarkAddedIcon sx={{ color: blue[800] }} />
-      </IconButton>
-    ) : (
-      <IconButton className="ml-auto" onClick={() => handleBookmark(id)}>
-        <BookmarkAddIcon />
-      </IconButton>
-    );
+  async function handleBookmark(action) {
+    if (userData.isSignedIn) {
+      const {
+        user: { id: userId },
+      } = userData;
+      const path = getCurrentURL();
+      const url = joinPaths(path, "bookmarks");
+      let newBookmarks = [];
+      if (action === "add") {
+        newBookmarks = [...bookmarks, coinId];
+        setBookmarkAdded(true);
+      } else if (action === "delete") {
+        newBookmarks = bookmarks.filter((item) => item !== coinId);
+        setBookmarkAdded(false);
+      }
+      const resp = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({ userId, coinId, bookmarks: newBookmarks }),
+      });
+      console.log(await resp.json());
+    }
   }
 
   useEffect(() => {
-    if (typeof id == "string" && id != "") {
+    if (typeof coinId == "string" && coinId != "") {
       const fetchCoinInfo = async () => {
         try {
-          const resp = await fetch(`${apiUrl}/coins/${id}`, {
+          const resp = await fetch(`${apiUrl}/coins/${coinId}`, {
             method: "GET",
             headers: {
               accept: "application/json",
@@ -149,11 +158,11 @@ export default function crypto() {
   }, []);
 
   useEffect(() => {
-    if (typeof id == "string" && id != "") {
+    if (typeof coinId == "string" && coinId != "") {
       const fetchHistoricalData = async () => {
         try {
           const response = await fetch(
-            `${apiUrl}/coins/${id}/market_chart?vs_currency=inr&days=1&precision=5`
+            `${apiUrl}/coins/${coinId}/market_chart?vs_currency=inr&days=1&precision=5`
           );
           const data = await response.json();
           const formattedData = historicalArrayFormatter(data.prices);
@@ -176,6 +185,26 @@ export default function crypto() {
       fetchHistoricalData();
     }
   }, []);
+  useEffect(() => {
+    if (coinId && isSignedIn) {
+      const {
+        user: { id: userId },
+      } = userData;
+      const path = getCurrentURL();
+      const url = joinPaths(path, "bookmarks");
+      const fetchBookmark = async () => {
+        try {
+          const resp = await fetch(`${url}?userId=${userId}`);
+          const data = await resp.json();
+          setBookmarks(data[0].user_bookmarks);
+          setBookmarkAdded(data[0].user_bookmarks.includes(coinId));
+        } catch (error) {
+          console.error("Error fetching bookmark data: ", error);
+        }
+      };
+      fetchBookmark();
+    }
+  }, [isSignedIn]);
   return (
     <ThemeProvider theme={theme}>
       {coinDetailFlags.isLoading || coinHistDataFlags.isLoading ? (
@@ -191,7 +220,20 @@ export default function crypto() {
                     <ArrowBackIosIcon />
                   </IconButton>
                 }
-                action={bookmarkButtom()}
+                action={
+                  <IconButton
+                    className="ml-auto text-color-black"
+                    onClick={() =>
+                      handleBookmark(bookmarkAdded ? "delete" : "add")
+                    }
+                  >
+                    {bookmarkAdded ? (
+                      <BookmarkAddedIcon sx={{ color: blue[800] }} />
+                    ) : (
+                      <BookmarkAddIcon />
+                    )}
+                  </IconButton>
+                }
                 className="border-b"
               />
               <CardContent className="block sm:flex py-4">

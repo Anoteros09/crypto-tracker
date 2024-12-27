@@ -1,7 +1,52 @@
-import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
+"use client";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  useAuth,
+  useUser,
+} from "@clerk/nextjs";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
+import { getCurrentURL, joinPaths } from "../utils/commFuncs";
 const WelcomePage = () => {
+  const userData = useUser();
+  const { isSignedIn, userId } = useAuth();
+  const addUserToDb = async () => {
+    const {
+      user: {
+        username,
+        primaryEmailAddress: { emailAddress },
+        id,
+      },
+    } = userData;
+    const path = getCurrentURL();
+    const url = joinPaths(path, "userinfo");
+    const resp = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify({ username, id, emailAddress }),
+    });
+  };
+  const fetchUserFromDb = async () => {
+    const path = getCurrentURL();
+    const url = joinPaths(path, "userinfo?");
+    const resp = await fetch(
+      url +
+        new URLSearchParams({
+          id: userId,
+        })
+    );
+    const data = await resp.json();
+    if (data.length == 0) {
+      addUserToDb();
+    }
+  };
+
+  useEffect(() => {
+    if (isSignedIn && userId) {
+      fetchUserFromDb();
+    }
+  }, [isSignedIn, userId]);
   return (
     <div className="max-h-screen flex flex-col items-center">
       <header className="text-center py-10">
@@ -38,7 +83,7 @@ const WelcomePage = () => {
               <SignInButton
                 mode="modal"
                 style={{ color: "white" }}
-                className="px-6 py-3 bg-green-500 text-white font-medium rounded-md shadow-md hover:bg-green-600"
+                className="px-6 py-3 bg-green-500 text-white text-xl font-medium rounded-md shadow-md hover:bg-green-600"
               />
             </div>
           </SignedOut>

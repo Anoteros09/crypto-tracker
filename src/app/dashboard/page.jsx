@@ -4,8 +4,6 @@ import Link from "next/link";
 import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
 import InfoIconFooter from "../Components/InfoIconFooter";
 import CustomModal from "../Components/CustomModal";
-import { useAuth, useUser } from "@clerk/nextjs";
-import { getCurrentURL, joinPaths } from "../utils/commFuncs";
 import { Box, Paper, TextField } from "@mui/material";
 
 const colDefs = [
@@ -132,49 +130,12 @@ const colDefs = [
 const api_key = process.env.NEXT_PUBLIC_API_KEY;
 const apiUrl = process.env.NEXT_PUBLIC_CRYPTO_API_URL;
 
-export default function page() {
+export default function Page() {
   const [data, setData] = useState([]);
   const apiRef = useGridApiRef();
   const [searchQuery, setSearchQuery] = useState("");
   const [infoModalOpen, setInfoModalOpen] = useState(false);
-  const userData = useUser();
-  const { isSignedIn, userId } = useAuth();
 
-  const addUserToDb = async () => {
-    const {
-      user: {
-        username,
-        primaryEmailAddress: { emailAddress },
-        id,
-      },
-    } = userData;
-    const path = getCurrentURL();
-    const url = joinPaths(path, "userinfo");
-    const resp = await fetch(url, {
-      method: "POST",
-      body: JSON.stringify({ username, id, emailAddress }),
-    });
-  };
-  const fetchUserFromDb = async () => {
-    const path = getCurrentURL();
-    const url = joinPaths(path, "userinfo?");
-    const resp = await fetch(
-      url +
-        new URLSearchParams({
-          id: userId,
-        })
-    );
-    const data = await resp.json();
-    if (data.length == 0) {
-      addUserToDb();
-    }
-  };
-
-  useEffect(() => {
-    if (isSignedIn && userId) {
-      fetchUserFromDb();
-    }
-  }, [isSignedIn, userId]);
   useEffect(() => {
     const fetchData = async () => {
       try {
