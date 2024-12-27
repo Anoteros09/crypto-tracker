@@ -31,6 +31,11 @@ export default function Navbar() {
                   Dashboard
                 </li>
               </Link>
+              <Link href="/bookmark">
+                <li className="mr-10 p-4 rounded-xl text-xl hover:bg-gray-700">
+                  Bookmark
+                </li>
+              </Link>
             </ul>
           </div>
           <div className="flex w-full justify-end mr-5 items-center">
@@ -70,6 +75,13 @@ export default function Navbar() {
               className="text-lg m-4"
             >
               <li>Dashboard</li>
+            </Link>
+            <Link
+              href="/bookmark"
+              onClick={() => handleMenuOpen()}
+              className="text-lg m-4"
+            >
+              <li>Bookmark</li>
             </Link>
           </ul>
         </div>
