@@ -44,7 +44,7 @@ const BookmarkGrid = () => {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+        gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
         gap: "20px",
         padding: "20px",
       }}
