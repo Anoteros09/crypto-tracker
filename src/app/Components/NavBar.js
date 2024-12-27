@@ -43,7 +43,7 @@ export default function Navbar() {
               <UserButton />
             </SignedIn>
             <SignedOut>
-              <SignInButton className="text-nowrap text-xl bg-green-500 py-2 rounded-md" />
+              <SignInButton className="text-nowrap text-xl bg-green-500 py-2 px-4 rounded-md hover:bg-green-700" />
             </SignedOut>
           </div>
           <div

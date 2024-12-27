@@ -83,7 +83,7 @@ const WelcomePage = () => {
               <SignInButton
                 mode="modal"
                 style={{ color: "white" }}
-                className="px-6 py-3 bg-green-500 text-white font-medium rounded-md shadow-md hover:bg-green-600"
+                className="px-6 py-3 bg-green-500 text-white text-xl font-medium rounded-md shadow-md hover:bg-green-600"
               />
             </div>
           </SignedOut>

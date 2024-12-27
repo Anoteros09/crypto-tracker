@@ -195,9 +195,7 @@ export default function Crypto() {
       const fetchBookmark = async () => {
         try {
           const resp = await fetch(`${url}?userId=${userId}`);
-          console.log(resp);
           const data = await resp.json();
-          console.log(data);
           setBookmarks(data[0].user_bookmarks);
           setBookmarkAdded(data[0].user_bookmarks.includes(coinId));
         } catch (error) {
