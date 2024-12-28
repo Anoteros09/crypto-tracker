@@ -1,30 +1,20 @@
 "use client";
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  useAuth,
-  useUser,
-} from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import Link from "next/link";
 import React, { useEffect } from "react";
 import { getCurrentURL, joinPaths } from "../utils/commFuncs";
+import { useUserStore } from "../store/user";
 const WelcomePage = () => {
-  const userData = useUser();
-  const { isSignedIn, userId } = useAuth();
-  const addUserToDb = async () => {
-    const {
-      user: {
-        username,
-        primaryEmailAddress: { emailAddress },
-        id,
-      },
-    } = userData;
+  const { userId, email, userName, isSignedIn } = useUserStore(
+    (state) => state.userData
+  );
+
+  const addUserToDb = () => {
     const path = getCurrentURL();
     const url = joinPaths(path, "userinfo");
-    const resp = await fetch(url, {
+    fetch(url, {
       method: "POST",
-      body: JSON.stringify({ username, id, emailAddress }),
+      body: JSON.stringify({ userName, userId, email }),
     });
   };
   const fetchUserFromDb = async () => {
@@ -43,15 +33,15 @@ const WelcomePage = () => {
   };
 
   useEffect(() => {
-    if (isSignedIn && userId) {
+    if (isSignedIn) {
       fetchUserFromDb();
     }
-  }, [isSignedIn, userId]);
+  }, [isSignedIn]);
   return (
     <div className="max-h-screen flex flex-col items-center">
       <header className="text-center py-10">
         <h1 className="text-4xl font-extrabold text-green-400">
-          Welcome to Crypto Tracker
+          Welcome {userName} to Crypto Tracker
         </h1>
         <p className="text-lg mt-4">
           Your gateway to tracking and managing cryptocurrency like a pro.

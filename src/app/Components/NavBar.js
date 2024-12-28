@@ -1,14 +1,42 @@
 "use client";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+  useUser,
+} from "@clerk/nextjs";
 import Link from "next/link";
 import HamburgerIcon from "./HamburgerIcon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useUserStore } from "../store/user";
+import { useDashboardStore } from "../store/dashboard";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const userData = useUserStore((state) => state.userData);
+  const setUser = useUserStore((state) => state.setUser);
+  const resetUserData = useUserStore((state) => state.resetUserData);
+  const resetStore = useDashboardStore((state) => state.resetStore);
+  const { user, isSignedIn } = useUser();
   const handleMenuOpen = () => {
     setMenuOpen(!menuOpen);
   };
+
+  useEffect(() => {
+    if (isSignedIn) {
+      setUser({
+        userId: user.id,
+        userName: user.username,
+        email: user.primaryEmailAddress.emailAddress,
+        isSignedIn,
+      });
+    } else {
+      resetUserData();
+      resetStore();
+    }
+  }, [isSignedIn, user]);
+
   return (
     <>
       <nav
