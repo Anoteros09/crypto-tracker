@@ -12,12 +12,12 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const { id, username, emailAddress } = await request.json();
+  const { userId, userName, email } = await request.json();
   const sql = neon(`${process.env.DATABASE_URL}`);
   const resp = await sql(
     `INSERT INTO user_details 
     (user_id, user_name, user_email) 
-    VALUES ('${id}', '${username}', '${emailAddress}')`
+    VALUES ('${userId}', '${userName}', '${email}')`
   );
   return Response.json({ message: "User Added Successfully" });
 }

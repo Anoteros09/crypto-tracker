@@ -1,10 +1,11 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
-import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import InfoIconFooter from "../Components/InfoIconFooter";
 import CustomModal from "../Components/CustomModal";
 import { Box, Paper, TextField } from "@mui/material";
+import { useDashboardStore } from "../store/dashboard";
 
 const colDefs = [
   {
@@ -127,46 +128,25 @@ const colDefs = [
     },
   },
 ];
-const api_key = process.env.NEXT_PUBLIC_API_KEY;
-const apiUrl = process.env.NEXT_PUBLIC_CRYPTO_API_URL;
 
 export default function Page() {
-  const [data, setData] = useState([]);
-  const apiRef = useGridApiRef();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [infoModalOpen, setInfoModalOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          `${apiUrl}/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d`,
-          {
-            method: "GET",
-            headers: {
-              accept: "application/json",
-              "x-cg-demo-api-key": api_key,
-            },
-          }
-        );
-        const data = await response.json();
-        setData(data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const tableData = useDashboardStore((state) => state.tableData);
+  const fetchTableData = useDashboardStore((state) => state.fetchTableData);
+  const searchQuery = useDashboardStore((state) => state.searchQuery);
+  const setSearchQuery = useDashboardStore((state) => state.setSearchQuery);
+  const infoModalOpen = useDashboardStore((state) => state.infoModalOpen);
+  const setInfoModalOpen = useDashboardStore((state) => state.setInfoModalOpen);
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
 
-  const filteredData = data.filter((crypto) => {
+  const filteredData = tableData.filter((crypto) => {
     return crypto.name.toLowerCase().includes(searchQuery.toLowerCase());
   });
-
+  useEffect(() => {
+    fetchTableData();
+  }, []);
   return (
     <>
       <Paper className="md:w-[75%] w-[90%] mx-auto h-[100%] bg-gray-100 p-2 mt-10">
@@ -182,11 +162,9 @@ export default function Page() {
         />
         <Box className="w-[100%] h-[630px]">
           <DataGrid
-            apiRef={apiRef}
             columns={colDefs}
             rows={filteredData}
             rowHeight={52}
-            // autosizeOnMount={true}
             disableVirtualization={true}
             slots={{
               footer: InfoIconFooter,
