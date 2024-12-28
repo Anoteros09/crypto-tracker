@@ -136,6 +136,8 @@ export default function Page() {
   const setSearchQuery = useDashboardStore((state) => state.setSearchQuery);
   const infoModalOpen = useDashboardStore((state) => state.infoModalOpen);
   const setInfoModalOpen = useDashboardStore((state) => state.setInfoModalOpen);
+  const isLoading = useDashboardStore((state) => state.isLoading);
+  const setLoading = useDashboardStore((state) => state.setLoading);
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -145,7 +147,7 @@ export default function Page() {
     return crypto.name.toLowerCase().includes(searchQuery.toLowerCase());
   });
   useEffect(() => {
-    fetchTableData();
+    fetchTableData().then(() => setLoading(false));
   }, []);
   return (
     <>
@@ -165,7 +167,7 @@ export default function Page() {
             columns={colDefs}
             rows={filteredData}
             rowHeight={52}
-            disableVirtualization={true}
+            loading={isLoading}
             slots={{
               footer: InfoIconFooter,
             }}

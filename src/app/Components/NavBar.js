@@ -10,12 +10,14 @@ import Link from "next/link";
 import HamburgerIcon from "./HamburgerIcon";
 import { useEffect, useState } from "react";
 import { useUserStore } from "../store/user";
+import { useDashboardStore } from "../store/dashboard";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const userData = useUserStore((state) => state.userData);
   const setUser = useUserStore((state) => state.setUser);
   const resetUserData = useUserStore((state) => state.resetUserData);
+  const resetStore = useDashboardStore((state) => state.resetStore);
   const { user, isSignedIn } = useUser();
   const handleMenuOpen = () => {
     setMenuOpen(!menuOpen);
@@ -31,6 +33,7 @@ export default function Navbar() {
       });
     } else {
       resetUserData();
+      resetStore();
     }
   }, [isSignedIn, user]);
 

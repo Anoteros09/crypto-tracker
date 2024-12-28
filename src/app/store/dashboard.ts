@@ -4,6 +4,7 @@ const initialStore = {
   tableData: [],
   searchQuery: "",
   infoModalOpen: false,
+  isLoading: true,
 };
 
 const api_key = process.env.NEXT_PUBLIC_API_KEY;
@@ -28,5 +29,6 @@ export const useDashboardStore = create((set) => ({
   },
   setSearchQuery: (searchQuery: string) => set({ searchQuery }),
   setInfoModalOpen: (infoModalOpen: Boolean) => set({ infoModalOpen }),
+  setLoading: (isLoading: Boolean) => set({ isLoading }),
   resetStore: () => set({ ...initialStore }),
 }));
