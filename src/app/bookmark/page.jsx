@@ -1,40 +1,35 @@
 "use client";
-import { useAuth } from "@clerk/nextjs";
 import React, { useState, useEffect } from "react";
-import { getCurrentURL } from "../utils/commFuncs";
 import { LinearProgress } from "@mui/material";
+import { useDashboardStore } from "../store/dashboard";
+import { useUserStore } from "../store/user";
+import { SparkLineChart } from "@mui/x-charts";
+import { blue } from "@mui/material/colors";
 
 const BookmarkGrid = () => {
-  const [bookmarks, setBookmarks] = useState([]);
+  const bookmarks = useUserStore((state) => state.userData.userBookmarks);
+  const isSignedIn = useUserStore((state) => state.userData.isSignedIn);
+  const coinsData = useDashboardStore((state) => state.tableData);
+  const fetchTableData = useDashboardStore((state) => state.fetchTableData);
+  const [cardData, setCardData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const { isSignedIn, userId } = useAuth();
 
   useEffect(() => {
-    const fetchBookmarks = async () => {
-      try {
-        const path = getCurrentURL();
-        const response = await fetch(`${path}/bookmarks/data?userId=${userId}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json(); // Parse the JSON response
-        setBookmarks(data); // Assuming API returns an array of bookmarks
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching bookmarks:", err);
-        setError("Failed to load bookmarks. Please try again later.");
+    try {
+      if (coinsData.length === 0) {
+        fetchTableData();
+      } else {
+        setCardData(coinsData.filter((coin) => bookmarks.includes(coin.id)));
+      }
+    } catch (err) {
+      console.error("Error fetching bookmarks:", err);
+      setLoading(false);
+    } finally {
+      if (isSignedIn && coinsData.length > 0) {
         setLoading(false);
       }
-    };
-    if (isSignedIn) {
-      fetchBookmarks();
     }
-  }, [isSignedIn, userId]);
-
-  if (error) {
-    return <p>{error}</p>;
-  }
+  }, [coinsData, bookmarks]);
 
   if (loading) {
     return <LinearProgress color="primary" />;
@@ -71,47 +66,68 @@ const BookmarkGrid = () => {
           </a>
         </div>
       ) : (
-        bookmarks.map((bookmark, index) => (
+        cardData.map((coin, index) => (
           <div
             key={index}
-            className="bg-white border border-gray-200 rounded-lg shadow-md p-4 flex flex-col items-center space-y-4 hover:shadow-lg transition-shadow duration-200"
+            className="bg-white border border-gray-200 rounded-lg shadow-md p-4 flex flex-col items-center space-y-4 hover:shadow-lg transition-shadow duration-200 max-w-[500px] min-w-[300px] mx-auto"
           >
             {/* Coin Image */}
             <img
-              src={bookmark.image}
-              alt={bookmark.name}
+              src={coin.image}
+              alt={coin.name}
               className="w-16 h-16 object-contain"
             />
 
             {/* Coin Title */}
-            <h3 className="text-lg font-semibold text-gray-800">
-              {bookmark.name}
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-800">{coin.name}</h3>
 
             {/* Current Price */}
             <p className="text-sm text-gray-600">
               Current Price:{" "}
               <span className="font-bold text-gray-800">
-                ${bookmark.current_price.toFixed(2)}
+                ${coin.current_price}
               </span>
+            </p>
+
+            {/* Current Price */}
+            <p className="text-sm text-gray-600">
+              Market Cap:{" "}
+              <span className="font-bold text-gray-800">
+                ${coin.market_cap.toFixed(2)}
+              </span>
+            </p>
+
+            {/* Current Price */}
+            <p className="text-sm text-gray-600">
+              Today's High:{" "}
+              <span className="font-bold text-gray-800">${coin.high_24h}</span>
+            </p>
+
+            {/* Current Price */}
+            <p className="text-sm text-gray-600">
+              Today's Low:{" "}
+              <span className="font-bold text-gray-800">${coin.low_24h}</span>
             </p>
 
             {/* 1 Day Change */}
             <p
               className={`text-sm font-semibold ${
-                bookmark.price_change_percentage_24h >= 0
+                coin.price_change_percentage_24h >= 0
                   ? "text-green-500"
                   : "text-red-500"
               }`}
             >
-              1 Day Change:{" "}
-              {bookmark.price_change_percentage_24h >= 0 ? "+" : ""}
-              {bookmark.price_change_percentage_24h.toFixed(2)}%
+              1 Day Change: {coin.price_change_percentage_24h >= 0 ? "+" : ""}
+              {coin.price_change_percentage_24h.toFixed(2)}%
             </p>
 
-            {/* Placeholder for Trend Chart */}
-            <div className="w-full h-16 bg-gray-100 rounded-md flex items-center justify-center text-gray-500 text-xs">
-              Trend Chart
+            {/* Sparkline Chart */}
+            <div className="w-full bg-gray-100 rounded-md flex items-center justify-center text-gray-500 text-xs">
+              <SparkLineChart
+                data={coin.sparkline_in_7d.price}
+                height={150}
+                colors={[blue[800]]}
+              />
             </div>
           </div>
         ))
