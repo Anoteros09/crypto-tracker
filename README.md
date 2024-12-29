@@ -6,27 +6,35 @@ A modern, responsive cryptocurrency tracker built with **Next.js**. This applica
 
 ### Features
 
-
-- 🔍 **Search & Filter**: Quickly find and filter cryptocurrencies by name, market cap, or price.
-
-- 📊 **Detailed Insights**: View in-depth data, Info on the cryptocurrency.
-- 🌐 **Responsive Design**: Fully optimized for desktop.
+- 🌟 **Welcome Page**: Introduces the app with a sleek and engaging interface.
+- 📊 **Dashboard**: Displays a table of top cryptocurrencies with details like:
+  - Name, Symbol
+  - Current price
+  - Market cap
+  - 1-hour, 24-hour, and 7-day percentage changes
+- 🔍 **Detailed Insights**: Click on any cryptocurrency to view:
+  - Detailed information about the coin
+  - Historical price graph with customizable ranges: past 1 day, 12 hours, 6 hours, 1 hour, and 30 minutes
+  - Option to bookmark the coin (if logged in)
+- ⭐ **Bookmarks**: View a dedicated page of bookmarked cryptocurrencies in a grid format with:
+  - Current price
+  - Today's high & low
+  - 1-day change percentage
+  - Sparkline for quick trend visualization
+- 🔒 **Authentication**: Secure user authentication and management powered by [Clerk](https://clerk.dev/).
+- 🌐 **Responsive Design**: Fully optimized for desktop and mobile devices.
 
 ---
 
-### Upcoming Features
-
-- 📈 **Live Price Tracking**: Real-time updates for the top cryptocurrencies.
-- ⭐ **Favorites**: Bookmark and easily access your favorite cryptocurrencies.
-- 📊 **Charts/Visualisations**: including price charts, trading volume, and historical trends.
-- **Mobile Friendly**: Resonsive for mobile devices.
-
 ### Tech Stack
 
-- **Frontend:** Next.js, React.js, Tailwind CSS
-- **Backend:** APIs from [CoinGecko](https://www.coingecko.com/) 
-- **State Management:** Context API / Redux (to be decided)
-- **Styling:** Tailwind CSS
+- **Frontend:** Next.js, Tailwind CSS
+- **DataGrid & Charts:** Material UI
+- **Backend:** Neon Serverless DB for storage
+- **State Management:** [Zustand](https://github.com/pmndrs/zustand)
+- **API:** [CoinGecko API](https://www.coingecko.com/)
+- **Authentication:** [Clerk](https://clerk.dev/)
+- **Hosting:** Vercel
 
 ---
 
@@ -54,7 +62,16 @@ A modern, responsive cryptocurrency tracker built with **Next.js**. This applica
    ```env
    NEXT_PUBLIC_CRYPTO_API_URL=https://api.coingecko.com/api/v3
    NEXT_PUBLIC_API_KEY=your_api_key_here
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_key_here
+   CLERK_SECRET_KEY=your_clerk_secret_key_here
+   YOUR_DB_KEY=your_db_secret_key_here
+   ...
    ```
+
+5. **Configure Clerk:**
+   - Sign up on [Clerk](https://clerk.dev/) and create a project.
+   - Add your Clerk API key to the `.env.local` file as shown above.
+   - Follow Clerk's documentation to integrate authentication into your Next.js app: [Clerk Documentation](https://clerk.dev/docs/nextjs).
 
 ---
 
@@ -64,9 +81,13 @@ A modern, responsive cryptocurrency tracker built with **Next.js**. This applica
 crypto-tracker/
 ├── public/              # Static assets like images and icons
 ├── src/
-│   ├── Components/      # Reusable UI components
-│   ├── crypto/          # Next.js Variable ID Page
-│   ├── styles/          # Global styles and Tailwind configuration
+│   ├── bookmark/        # Bookmark Page & Routes components
+│   ├── components/      # Reusable UI components
+│   ├── crypto/          # Next.js dynamic routes for cryptocurrency details
+│   ├── dashboard/       # Dashboard components
+│   ├── store/           # State management folder using Zustand
+│   ├── userinfo/        # Next.js Route Handler file for userinfo transaction with db
+│   ├── utils/           # Reusable functions
 ├── .env.local           # Environment variables
 ├── package.json         # Dependencies and scripts
 └── README.md            # Project documentation
@@ -76,11 +97,15 @@ crypto-tracker/
 
 ### Roadmap
 
-- [ ] Implement filtering and sorting functionality.
-- [ ] Add bookmarking feature for favorite cryptocurrencies.
-- [ ] Integrate live cryptocurrency price updates.
-- [ ] Enhance UI/UX with Tailwind CSS.
-- [ ] Deploy the app on Vercel.
+- [x] Create a welcome page with app introduction.
+- [x] Implement a dashboard to display top cryptocurrencies.
+- [x] Add detailed coin pages with historical price graphs.
+- [x] Enable bookmarking functionality for logged-in users.
+- [x] Build a bookmark page with grid view and sparklines.
+- [x] Integrate secure user authentication using Clerk.
+- [x] Enhance mobile responsiveness.
+- [ ] User configurable currency exchange type
+- [ ] Overall smoothness & stablility
 
 ---
 
