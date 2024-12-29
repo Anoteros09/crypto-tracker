@@ -1,6 +1,6 @@
 {
   "name": "crypto-tracker",
-  "version": "2.4.0-Beta",
+  "version": "2.4.1-Beta",
   "private": true,
   "scripts": {
     "dev": "next dev",
