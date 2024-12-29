@@ -22,6 +22,7 @@ import { createTheme, ThemeProvider } from "@mui/material";
 import { LineChart } from "@mui/x-charts";
 import ColorThief from "colorthief";
 import { getCurrentURL, joinPaths } from "../../utils/commFuncs";
+import { useUserStore } from "../../store/user";
 
 const apiUrl = process.env.NEXT_PUBLIC_CRYPTO_API_URL;
 const api_key = process.env.NEXT_PUBLIC_API_KEY;
@@ -83,6 +84,7 @@ export default function Crypto() {
   );
   const [chartRange, setChartRange] = useState("1440");
   const [bgColor, setBgColor] = useState("transparent");
+  const fetchUserData = useUserStore((state) => state.fetchUserData);
 
   const handleChartRangeChange = (e) => {
     const range = e.target.value;
@@ -105,11 +107,12 @@ export default function Crypto() {
         newBookmarks = bookmarks.filter((item) => item !== coinId);
         setBookmarkAdded(false);
       }
-      const resp = await fetch(url, {
+      await fetch(url, {
         method: "POST",
         body: JSON.stringify({ userId, coinId, bookmarks: newBookmarks }),
+      }).finally(() => {
+        fetchUserData(userId);
       });
-      console.log(await resp.json());
     }
   }
 
@@ -162,7 +165,7 @@ export default function Crypto() {
       const fetchHistoricalData = async () => {
         try {
           const response = await fetch(
-            `${apiUrl}/coins/${coinId}/market_chart?vs_currency=inr&days=1&precision=5`
+            `${apiUrl}/coins/${coinId}/market_chart?vs_currency=usd&days=1&precision=2`
           );
           const data = await response.json();
           const formattedData = historicalArrayFormatter(data.prices);

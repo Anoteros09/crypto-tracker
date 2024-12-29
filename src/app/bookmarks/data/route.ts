@@ -1,3 +1,4 @@
+//Depreciated?? IDK
 import { neon } from "@neondatabase/serverless";
 import { type NextRequest } from "next/server";
 
@@ -26,7 +27,7 @@ export async function GET(request: NextRequest) {
     }
     //   resp[0].user_bookmarks
     const response = await fetch(
-      `${apiUrl}/coins/markets?vs_currency=inr&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h%2C`,
+      `${apiUrl}/coins/markets?vs_currency=inr&order=market_cap_desc&sparkline=true&price_change_percentage=24h%2C`,
       {
         method: "GET",
         headers: {
@@ -47,6 +48,7 @@ export async function GET(request: NextRequest) {
         image: item.image,
         current_price: item.current_price,
         price_change_percentage_24h: item.price_change_percentage_24h,
+        price_7d_hrly_chart: item.sparkline_in_7d.price,
       });
     });
     // Need to write code for chart data for each coin

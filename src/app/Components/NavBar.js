@@ -14,8 +14,8 @@ import { useDashboardStore } from "../store/dashboard";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const userData = useUserStore((state) => state.userData);
   const setUser = useUserStore((state) => state.setUser);
+  const fetchUserData = useUserStore((state) => state.fetchUserData);
   const resetUserData = useUserStore((state) => state.resetUserData);
   const resetStore = useDashboardStore((state) => state.resetStore);
   const { user, isSignedIn } = useUser();
@@ -31,6 +31,7 @@ export default function Navbar() {
         email: user.primaryEmailAddress.emailAddress,
         isSignedIn,
       });
+      fetchUserData(user.id);
     } else {
       resetUserData();
       resetStore();
@@ -71,7 +72,7 @@ export default function Navbar() {
               <UserButton />
             </SignedIn>
             <SignedOut>
-              <SignInButton className="text-nowrap text-xl bg-green-500 py-2 px-4 rounded-md hover:bg-green-700" />
+              <SignInButton className="text-nowrap text-xl py-2 px-4 rounded-md hover:bg-gray-700" />
             </SignedOut>
           </div>
           <div
