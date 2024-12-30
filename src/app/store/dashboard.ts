@@ -10,27 +10,14 @@ const initialStore = {
 const api_key = process.env.NEXT_PUBLIC_API_KEY;
 const apiUrl = process.env.NEXT_PUBLIC_CRYPTO_API_URL;
 
-// function getCurrentSymbol(currencyCode) {
-//   const formatter = new Intl.NumberFormat(undefined, {
-//     style: "currency",
-//     currency: currencyCode,
-//     minimumFractionDigits: 0, // We don't need decimals for this
-//   });
-
-//   // Extract the currency symbol from a formatted string
-//   const formatted = formatter.format(1); // Example value
-//   const symbol = formatted.replace(/\d|,|\.|\s/g, ""); // Remove digits, commas, periods, and spaces
-//   return symbol;
-// }
-
 export const useDashboardStore = create(
   devtools(
     (set) => ({
       ...initialStore,
       setTableData: (tableData: any) => set({ tableData }),
-      fetchTableData: async () => {
+      fetchTableData: async (currency: string) => {
         const response = await fetch(
-          `${apiUrl}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=1h%2C24h%2C7d`,
+          `${apiUrl}/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=1h%2C24h%2C7d`,
           {
             method: "GET",
             headers: {
@@ -40,7 +27,9 @@ export const useDashboardStore = create(
           }
         );
         const data = await response.json();
-        set({ tableData: data });
+        set({
+          tableData: data,
+        });
       },
       setSearchQuery: (searchQuery: string) => set({ searchQuery }),
       setInfoModalOpen: (infoModalOpen: Boolean) => set({ infoModalOpen }),

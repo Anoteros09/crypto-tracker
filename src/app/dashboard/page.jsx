@@ -6,6 +6,8 @@ import InfoIconFooter from "../Components/InfoIconFooter";
 import CustomModal from "../Components/CustomModal";
 import { Box, Paper, TextField } from "@mui/material";
 import { useDashboardStore } from "../store/dashboard";
+import { useGlobalStore } from "../store/global";
+import { getCurrentSymbol } from "../utils/commFuncs";
 
 const colDefs = [
   {
@@ -55,7 +57,7 @@ const colDefs = [
       if (!value) {
         return value;
       }
-      return `₹${value.toFixed(2)}`;
+      return `${value.toFixed(2)}`;
     },
   },
   {
@@ -67,7 +69,7 @@ const colDefs = [
       if (!value) {
         return value;
       }
-      return `₹${value.toLocaleString("en-US")}`;
+      return `${value.toLocaleString("en-US")}`;
     },
   },
   {
@@ -129,6 +131,17 @@ const colDefs = [
   },
 ];
 
+const addCurrencySymbol = (colDef, currencySymbol) => {
+  return colDef.map((col) => {
+    if (col.field === "current_price") {
+      col.headerName = `Current Price (${currencySymbol})`;
+    } else if (col.field === "market_cap") {
+      col.headerName = `Market Cap (${currencySymbol})`;
+    }
+    return col;
+  });
+};
+
 export default function Page() {
   const tableData = useDashboardStore((state) => state.tableData);
   const fetchTableData = useDashboardStore((state) => state.fetchTableData);
@@ -138,7 +151,8 @@ export default function Page() {
   const setInfoModalOpen = useDashboardStore((state) => state.setInfoModalOpen);
   const isLoading = useDashboardStore((state) => state.isLoading);
   const setLoading = useDashboardStore((state) => state.setLoading);
-
+  const currency = useGlobalStore((state) => state.globalValues.currency);
+  const currencySymbol = getCurrentSymbol(currency);
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
@@ -147,8 +161,8 @@ export default function Page() {
     return crypto.name.toLowerCase().includes(searchQuery.toLowerCase());
   });
   useEffect(() => {
-    fetchTableData().then(() => setLoading(false));
-  }, []);
+    fetchTableData(currency).then(() => setLoading(false));
+  }, [currency]);
   return (
     <>
       <Paper className="md:w-[75%] w-[90%] mx-auto h-[100%] bg-gray-100 p-2 mt-10">
@@ -164,7 +178,7 @@ export default function Page() {
         />
         <Box className="w-[100%] h-[630px]">
           <DataGrid
-            columns={colDefs}
+            columns={addCurrencySymbol(colDefs, currencySymbol)}
             rows={filteredData}
             rowHeight={52}
             loading={isLoading}

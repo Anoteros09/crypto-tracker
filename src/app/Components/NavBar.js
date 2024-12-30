@@ -11,6 +11,8 @@ import HamburgerIcon from "./HamburgerIcon";
 import { useEffect, useState } from "react";
 import { useUserStore } from "../store/user";
 import { useDashboardStore } from "../store/dashboard";
+import { MenuItem, Select } from "@mui/material";
+import { useGlobalStore } from "../store/global";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -18,6 +20,8 @@ export default function Navbar() {
   const fetchUserData = useUserStore((state) => state.fetchUserData);
   const resetUserData = useUserStore((state) => state.resetUserData);
   const resetStore = useDashboardStore((state) => state.resetStore);
+  const currency = useGlobalStore((state) => state.globalValues.currency);
+  const setGlobalValues = useGlobalStore((state) => state.setGlobalValues);
   const { user, isSignedIn } = useUser();
   const handleMenuOpen = () => {
     setMenuOpen(!menuOpen);
@@ -68,6 +72,21 @@ export default function Navbar() {
             </ul>
           </div>
           <div className="flex w-full justify-end mr-5 items-center">
+            <div className="mr-10">
+              <Select
+                value={currency}
+                onChange={(e) => setGlobalValues({ currency: e.target.value })}
+                className="bg-white h-8"
+              >
+                <MenuItem value={"usd"}>USD</MenuItem>
+                <MenuItem value={"inr"}>INR</MenuItem>
+                <MenuItem value={"gbp"}>GBP</MenuItem>
+                <MenuItem value={"eur"}>EUR</MenuItem>
+                <MenuItem value={"jpy"}>JPY</MenuItem>
+                <MenuItem value={"cny"}>CNY</MenuItem>
+                <MenuItem value={"rub"}>RUB</MenuItem>
+              </Select>
+            </div>
             <SignedIn>
               <UserButton />
             </SignedIn>
