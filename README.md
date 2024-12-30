@@ -104,7 +104,8 @@ crypto-tracker/
 - [x] Build a bookmark page with grid view and sparklines.
 - [x] Integrate secure user authentication using Clerk.
 - [x] Enhance mobile responsiveness.
-- [ ] User configurable currency exchange type
+- [x] User configurable currency exchange type
+- [ ] Globalised Loading state
 - [ ] Overall smoothness & stablility
 
 ---
