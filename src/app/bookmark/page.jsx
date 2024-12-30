@@ -5,20 +5,23 @@ import { useDashboardStore } from "../store/dashboard";
 import { useUserStore } from "../store/user";
 import { SparkLineChart } from "@mui/x-charts";
 import { blue } from "@mui/material/colors";
+import { useGlobalStore } from "../store/global";
+import { getCurrentSymbol } from "../utils/commFuncs";
 
 const BookmarkGrid = () => {
   const bookmarks = useUserStore((state) => state.userData.userBookmarks);
   const isSignedIn = useUserStore((state) => state.userData.isSignedIn);
   const coinsData = useDashboardStore((state) => state.tableData);
   const fetchTableData = useDashboardStore((state) => state.fetchTableData);
+  const currency = useGlobalStore((state) => state.globalValues.currency);
+  const currencySymbol = getCurrentSymbol(currency);
   const [cardData, setCardData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     try {
-      if (coinsData.length === 0) {
-        fetchTableData();
-      } else {
+      fetchTableData(currency);
+      if (coinsData.length > 0) {
         setCardData(coinsData.filter((coin) => bookmarks.includes(coin.id)));
       }
     } catch (err) {
@@ -29,7 +32,7 @@ const BookmarkGrid = () => {
         setLoading(false);
       }
     }
-  }, [coinsData, bookmarks]);
+  }, [coinsData, bookmarks, currency]);
 
   if (loading) {
     return <LinearProgress color="primary" />;
@@ -85,7 +88,7 @@ const BookmarkGrid = () => {
             <p className="text-sm text-gray-600">
               Current Price:{" "}
               <span className="font-bold text-gray-800">
-                ${coin.current_price}
+                {currencySymbol} {coin.current_price}
               </span>
             </p>
 
@@ -93,20 +96,24 @@ const BookmarkGrid = () => {
             <p className="text-sm text-gray-600">
               Market Cap:{" "}
               <span className="font-bold text-gray-800">
-                ${coin.market_cap.toFixed(2)}
+                {currencySymbol} {coin.market_cap.toFixed(2)}
               </span>
             </p>
 
             {/* Current Price */}
             <p className="text-sm text-gray-600">
               Today's High:{" "}
-              <span className="font-bold text-gray-800">${coin.high_24h}</span>
+              <span className="font-bold text-gray-800">
+                {currencySymbol} {coin.high_24h}
+              </span>
             </p>
 
             {/* Current Price */}
             <p className="text-sm text-gray-600">
               Today's Low:{" "}
-              <span className="font-bold text-gray-800">${coin.low_24h}</span>
+              <span className="font-bold text-gray-800">
+                {currencySymbol} {coin.low_24h}
+              </span>
             </p>
 
             {/* 1 Day Change */}
