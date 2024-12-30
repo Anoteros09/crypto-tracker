@@ -23,3 +23,11 @@ body {
 .custPagination p {
   margin-bottom: 0;
 }
+
+.currency-select .css-1ll44ll-MuiOutlinedInput-notchedOutline {
+  border-color: white;
+}
+
+.currency-select svg {
+  fill: white;
+}

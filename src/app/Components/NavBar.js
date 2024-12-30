@@ -72,14 +72,16 @@ export default function Navbar() {
             </ul>
           </div>
           <div className="flex w-full justify-end mr-5 items-center">
-            <div className="mr-10">
+            <div className="mr-10 currency-select">
               <Select
                 value={currency}
+                id="currency-select"
                 onChange={(e) => setGlobalValues({ currency: e.target.value })}
-                className="bg-white h-8"
+                className="h-8"
+                sx={{ borderColor: "white", border: "white", color: "white" }}
               >
-                <MenuItem value={"usd"}>USD</MenuItem>
                 <MenuItem value={"inr"}>INR</MenuItem>
+                <MenuItem value={"usd"}>USD</MenuItem>
                 <MenuItem value={"gbp"}>GBP</MenuItem>
                 <MenuItem value={"eur"}>EUR</MenuItem>
                 <MenuItem value={"jpy"}>JPY</MenuItem>
