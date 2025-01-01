@@ -42,7 +42,7 @@ A modern, responsive cryptocurrency tracker built with **Next.js**. This applica
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/yourusername/crypto-tracker.git
+   git clone https://github.com/Anoteros09/crypto-tracker.git
    cd crypto-tracker
    ```
 
